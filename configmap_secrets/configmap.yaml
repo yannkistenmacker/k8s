@@ -3,7 +3,11 @@ kind: ConfigMap
 metadata:
   name: nginx-demo
 data:
-  virtual_host: vhost1.localhost.com
+  virtual_host: "vhost1.localhost.com"
+  index.html: |
+    <html>
+      <h1>Opa, chegou no index.html novo!</h1>
+    </html>
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -31,4 +35,14 @@ spec:
                 configMapKeyRef:
                   name: nginx-demo
                   key: virtual_host
+          volumeMounts:
+          - name: index-html
+            mountPath: "/usr/share/nginx/html"
+      volumes:
+        - name: index-html
+          configMap:
+            name: nginx-demo
+            items:
+            - key: "index.html"
+              path: "index.html"
 
